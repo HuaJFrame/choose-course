@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>课程详情</title>
+    <!-- jquery -->
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="./bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="layer/layer.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="js/common.js"></script>
+</head>
+<body>
+<div class="panel panel-default">
+    <div class="panel-heading">课程详情</div>
+    <div class="panel-body">
+
+    </div>
+    <table class="table" id="classes">
+        <tr>
+            <td>课程名称</td>
+            <td colspan="3" id="courseName"></td>
+        </tr>
+        <tr>
+            <td>课程图片</td>
+            <td colspan="3"><img id="courseImg" width="200" height="200"/></td>
+        </tr>
+        <tr>
+            <td>课程详情</td>
+            <td colspan="3" id="courseDetail"></td>
+        </tr>
+        <tr>
+            <td>教室位置</td>
+            <td colspan="2" id="classroom">
+
+            </td>
+            <td>
+                <button class="btn btn-primary btn-block" type="button" id="chooseButton"
+                        onclick="getChoosePath()">确认选课
+                </button>
+                <input type="hidden" name="classesId" id="classesId"/>
+            </td>
+        </tr>
+        <tr>
+            <td>已选人数</td>
+            <td colspan="3" id="studentNum"></td>
+        </tr>
+    </table>
+</div>
+</body>
+<script>
+
+    function doChoose(path) {
+        $.ajax({
+            url: "/record/" + path + "/doChoose",
+            type: "POST",
+            data: {
+                classesId: $("#classesId").val(),
+            },
+            success: function (data) {
+                if (data.code === 200) {
+                    layer.confirm("正在排队中，是否继续选择其他课程还是等待选课结果？",
+                            {btn: ["选其他课程", "等待"]},
+                            function () {
+                                window.location.href = "/classes/toList";
+                            },
+                            function () {
+                                getResult($("#classesId").val());
+                            });
+                } else {
+                    layer.msg(data.message);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求错误");
+            }
+        })
+    }
+
+    $(function () {
+        getDetails();
+    });
+
+    function getDetails() {
+        var classesId = g_getQueryString("classesId");
+        $.ajax({
+            url: "/classes/detail/" + classesId,
+            type: "GET",
+            success: function (data) {
+                if (data.code === 200) {
+                    render(data.obj);
+                } else {
+                    layer.msg(data.message);
+                    window.location.href="/classes/toList";
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求错误");
+            }
+        })
+    }
+
+    function render(result) {
+        $("#classesId").val(result.id);
+        $("#courseName").text(result.courseName);
+        $("#courseImg").attr("src", result.courseImg);
+        $("#courseDetail").text(result.courseDetail);
+        $("#classroom").text(result.classroom);
+        $("#studentNum").text(result.currentStudentNum + "/" + (result.studentNum + result.currentStudentNum));
+    }
+
+    function getResult(classesId) {
+        g_showLoading();
+        $.ajax({
+            url: "/record/result",
+            type: "GET",
+            data: {
+                classesId: classesId,
+            },
+            success: function (data) {
+                if (data.code === 200) {
+                    var result = data.obj;
+                    if (result < 0) {
+                        layer.msg("对不起，选课失败！");
+                    } else if (result === 0) {
+                        setTimeout(function () {
+                            getResult(classesId);
+                        }, 1000);
+                    } else {
+                        layer.confirm("恭喜你，选课成功！查看课程？", {btn: ["确定", "取消"]},
+                                function () {
+                                    window.location.href = "/recordDetail.html?recordId=" +
+                                            result;
+                                },
+                                function () {
+                                    layer.close();
+                                });
+                    }
+                    } else {
+                        layer.msg(data.message);
+                    }
+                },
+                error: function () {
+                    layer.msg("客户端请求错误");
+                }
+            })
+    }
+
+    function getChoosePath() {
+        var classesId = $("#classesId").val();
+        g_showLoading();
+        $.ajax({
+            url: "/record/path",
+            type: "GET",
+            data: {
+                classesId: classesId,
+            },
+            success: function (data) {
+                if (data.code === 200) {
+                    var path = data.obj;
+                    doChoose(path);
+                } else {
+                    layer.msg(data.message);
+                }
+            }
+            ,
+            error: function () {
+                layer.msg("客户端请求错误");
+            }
+        })
+    }
+
+</script>
+</html>

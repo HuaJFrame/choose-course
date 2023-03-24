@@ -1,0 +1,129 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>课程详情</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- jquery -->
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <!-- layer -->
+    <script type="text/javascript" src="layer/layer.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="js/common.js"></script>
+</head>
+<body>
+<div class="panel panel-default">
+    <div class="panel-heading">课程详情</div>
+    <table class="table" id="classes">
+        <tr>
+            <td>课程名称</td>
+            <td colspan="3" id="courseName"></td>
+        </tr>
+        <tr>
+            <td>课程图片</td>
+            <td colspan="3"><img id="courseImg" width="200" height="200"/></td>
+        </tr>
+        <tr>
+            <td>课程详情</td>
+            <td colspan="3" id="courseDetail"></td>
+        </tr>
+        <tr>
+            <td>教室位置</td>
+            <td colspan="2" id="classroom">
+
+            </td>
+            <td >
+
+            </td>
+        </tr>
+        <tr>
+            <td>课程状态</td>
+            <td id="status">
+
+            </td>
+            <td id="isCheck">
+
+            </td>
+        </tr>
+    </table>
+</div>
+<script>
+    $(function () {
+        getOrderDetail();
+    });
+
+    function getOrderDetail() {
+        var recordId = g_getQueryString("recordId");
+        $.ajax({
+            url: "/record/detail",
+            type: "GET",
+            data: {
+                recordId: recordId
+            },
+            success: function (data) {
+                if (data.code === 200) {
+                    render(data.obj);
+                } else {
+                    layer.msg(data.message);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求错误")
+            }
+        })
+    }
+
+    function render(detail) {
+        var record = detail.record;
+        var classes = detail.classes;
+        var course = detail.course;
+        $("#courseName").text(course.courseName);
+        $("#courseImg").attr("src", course.courseImg);
+        $("#courseDetail").text(course.courseDetail);
+        $("#classroom").text(classes.classroom);
+        var status = record.status;
+        var statusText = ""
+        switch (status) {
+            case 0:
+                statusText = "未报到";
+                $("#isCheck").append("<button class='btn btn-primary btn-block'" +
+                        "type= 'submit' id='checkButton' " +
+                        "onclick='doCheck()'>立即报道</button>");
+                break;
+            case 1:
+                statusText = "已经报道";
+                $("#isCheck").empty();
+                break;
+            case 2:
+                statusText = "超时未报道";
+                $("#isCheck").empty();
+                break;
+        }
+        $("#status").text(statusText);
+    }
+
+    function doCheck(){
+        var recordId = g_getQueryString("recordId");
+        $.ajax({
+            url: "/record/check",
+            type: "GET",
+            data: {
+                recordId: recordId
+            },
+            success: function (data) {
+                if (data.code === 200) {
+                    getOrderDetail();
+                } else {
+                    layer.msg(data.message);
+                }
+            },
+            error: function () {
+                layer.msg("客户端请求错误")
+            }
+        })
+    }
+</script>
+</body>
+</html>

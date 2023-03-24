@@ -1,0 +1,99 @@
+#端口号
+server:
+  port: 9090
+
+spring:
+  # 应用名称
+  application:
+    # 学生选课
+    name: student-choose-course
+  thymeleaf:
+    # 关闭thymeleaf缓存
+    cache: false
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/choose_course?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    hikari:
+      # 连接池名称
+      pool-name: mallCP
+      # 空闲连接最大存活时间,默认10分钟-600000
+      idle-timeout: 300000
+      # 最小连接数
+      minimum-idle: 5
+      # 测试连接是否可以的查询语句
+      connection-test-query: select 1
+  #时间格式化配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  # redis配置
+  redis:
+    #    # ip
+    #    host: 192.168.137.66
+    #    # 端口号
+    #    port: 6379
+
+    # 操作redis的密码
+    password: root
+    #哨兵模式
+    sentinel:
+      # 主设备名称
+      master: mymaster
+      # 哨兵节点
+      nodes: 192.168.137.66:6579
+      # 访问哨兵的密码
+      password: root
+    # 连接池配置
+    lettuce:
+      pool:
+        # 最大连接数， 默认8
+        max-active: 1000
+        # 最长等待时间
+        max-wait: 5000ms
+        # 最大空闲连接
+        max-idle: 200
+        # 最小空闲连接
+        min-idle: 5
+
+  # rabbitmq
+  rabbitmq:
+    # 主机
+    host: 192.168.137.66
+    # 端口号
+    port: 5672
+    # 用户名
+    username: szh
+    # 密码
+    password: szh2498936201
+    # 虚拟主机
+    virtual-host: /
+    listener:
+      simple:
+        #决定被拒绝的消息是否重新入队
+        default-requeue-rejected: true
+        retry:
+          #时间间隔5秒
+          initial-interval: 5000ms
+          enabled: true
+          #最大重试次数
+          max-attempts: 3
+# mybatis-plus配置
+mybatis-plus:
+  # mapper文件位置
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  # 起别名
+  type-aliases-package: com.huajframe.choosecourse.entity
+  # 字段名对属性名
+  configuration:
+    map-underscore-to-camel-case: true
+
+# sql打印级别
+logging:
+  level:
+    com:
+      huajframe:
+        choosecourse:
+          dao: debug

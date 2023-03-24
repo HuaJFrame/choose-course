@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huajframe.choosecourse.dao.ClassesMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.huajframe.choosecourse.entity.Classes">
+        <id column="id" property="id" />
+        <result column="course_id" property="courseId" />
+        <result column="classroom" property="classroom"/>
+        <result column="student_num" property="studentNum" />
+        <result column="current_student_num" property="currentStudentNum" />
+        <result column="start_date" property="startDate" />
+        <result column="end_date" property="endDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, course_id, classroom, student_num, current_student_num, start_date, end_date
+    </sql>
+    <select id="findClassesVo" resultType="com.huajframe.choosecourse.vo.ClassesVo">
+        SELECT
+        tc.id,
+        t1.course_name,
+        t1.course_detail,
+        t1.course_img,
+        tc.classroom,
+        tc.student_num,
+        tc.current_student_num
+        FROM
+        t_course t1
+        LEFT JOIN t_classes tc ON t1.id = tc.course_id
+        WHERE
+        tc.start_date &lt;= now() AND tc.end_date &gt;= now();
+    </select>
+    <select id="findClassesVoByClassesId" resultType="com.huajframe.choosecourse.vo.ClassesVo">
+        SELECT
+            tc.id,
+            t1.course_name,
+            t1.course_detail,
+            t1.course_img,
+            tc.classroom,
+            tc.student_num,
+            tc.current_student_num
+        FROM
+            t_course t1
+                LEFT JOIN t_classes tc ON t1.id = tc.course_id
+        WHERE
+            tc.start_date &lt;= now() AND tc.end_date &gt;= now()
+            and tc.id = #{classesId}
+    </select>
+
+</mapper>

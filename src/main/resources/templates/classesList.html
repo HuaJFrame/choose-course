@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>课程列表</title>
+    <!-- jquery -->
+    <script type="text/javascript" th:src="@{/js/jquery.min.js}"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css"
+          th:href="@{/bootstrap/css/bootstrap.min.css}"/>
+    <script type="text/javascript" th:src="@{/bootstrap/js/bootstrap.min.js}">
+    </script>
+    <!-- layer -->
+    <script type="text/javascript" th:src="@{/layer/layer.js}"></script>
+    <!-- common.js -->
+    <script type="text/javascript" th:src="@{/js/common.js}"></script>
+</head>
+<body>
+    <div class="panel panel-default">
+        <div class="panel-heading">选修课列表</div>
+        <table class="table" id="classesList">
+            <tr>
+                <td>编号</td>
+                <td>课程名称</td>
+                <td>课程图片</td>
+                <td>教室位置</td>
+                <td>人数</td>
+                <td>详情</td>
+            </tr>
+            <tr th:each="classes, classesStat : ${classesList}">
+                <td th:text="${classesStat.count}"></td>
+                <td th:text="${classes.courseName}"></td>
+                <td><img th:src="@{${classes.courseImg}}" width="300" height="100"/>
+                </td>
+                <td th:text="${classes.classroom}"></td>
+                <td th:text="${classes.currentStudentNum} + '/' + ${classes.studentNum + classes.currentStudentNum}"></td>
+                <td><a th:href="'/classesDetail.html?classesId='+${classes.id}">选课</a></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

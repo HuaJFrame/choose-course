@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huajframe.choosecourse.dao.CourseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.huajframe.choosecourse.entity.Course">
+        <id column="id" property="id" />
+        <result column="course_number" property="courseNumber" />
+        <result column="course_name" property="courseName" />
+        <result column="course_img" property="courseImg" />
+        <result column="course_detail" property="courseDetail" />
+        <result column="category" property="category" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, course_number, course_name, course_img, course_detail, category
+    </sql>
+
+</mapper>
